@@ -1,69 +1,44 @@
 #include "vector.h"
-#include <cstddef>
 #include <iostream>
-
-template <typename T>
-void printVector(const Vector<T>& vector)
-{
-    for (size_t i = 0; i < vector.size(); ++i) {
-        // std::cout << vector.at(i) << std::endl;
-    }
-}
-
-class Test {
-public:
-    float x, y;
-
-    Test(float x, float y)
-        : x(x)
-        , y(y)
-    {
-        std::cout << "Created" << std::endl;
-    }
-
-    Test(const Test& other)
-    {
-        x = other.x;
-        y = other.y;
-        std::cout << "Copied" << std::endl;
-    }
-
-    Test(Test&& other)
-    {
-        x = other.x;
-        y = other.y;
-        std::cout << "Moved" << std::endl;
-    }
-
-    ~Test()
-    {
-        std::cout << "Destroyed" << std::endl;
-    }
-
-    Test& operator=(const Test& other)
-    {
-        std::cout << "Copied 2" << std::endl;
-        x = other.x;
-        y = other.y;
-        return *this;
-    }
-
-    Test& operator=(Test&& other)
-    {
-        std::cout << "Moved 2" << std::endl;
-        x = other.x;
-        y = other.y;
-        return *this;
-    }
-};
 
 int main()
 {
 
-    Vector<Test> vector;
+    Vector<int> vector;
 
-    vector.pushBack(Test(1, 2));
-    vector.pushBack(Test(3, 4));
+    vector.emplaceBack(1);
+    vector.emplaceBack(2);
+    vector.emplaceBack(3);
+    vector.emplaceBack(4);
+    vector.emplaceBack(5);
+    vector.emplaceBack(6);
+
+    for (auto& value : vector) {
+        std::cout << value << std::endl;
+    }
+
+    std::cout << std::endl;
+
+    for (Vector<int>::Iterator it = vector.begin(); it != vector.end(); ++it) {
+        std::cout << *it << std::endl;
+    }
+
+    std::cout << std::endl;
+
+    Vector<int>::Iterator iterator = vector.begin();
+
+    std::cout << iterator[0] << std::endl;
+    iterator += 2;
+    std::cout << iterator[0] << std::endl;
+
+    auto secondIt = iterator - 1;
+
+    std::cout << *secondIt << std::endl;
+
+    std::cout << (secondIt < iterator) << std::endl;
+    std::cout << (secondIt > iterator) << std::endl;
+
+    std::cout << (secondIt == (iterator - 1)) << std::endl;
 
     std::cout << "Finshed" << std::endl;
 }
