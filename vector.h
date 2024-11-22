@@ -1,5 +1,4 @@
 #include <cassert>
-#include <cstddef>
 #include <iostream>
 #include <new>
 #include <ostream>
@@ -69,6 +68,11 @@ public:
         return copy;
     }
 
+    int operator-(const VectorIterator& other) const
+    {
+        return m_pointer - other.m_pointer;
+    }
+
     valueType& operator*() const
     {
         return *m_pointer;
@@ -122,17 +126,18 @@ template <typename T>
 class Vector {
 public:
     using valueType = T;
-    using Iterator = VectorIterator<Vector<T>>;
+    using iterator = VectorIterator<Vector<T>>;
+    using sizeType = unsigned int;
 
 public:
     Vector()
     {
-        reAllocate(2);
+        reallocate(2);
     }
 
-    Vector(const size_t capacity)
+    Vector(const sizeType capacity)
     {
-        reAllocate(capacity);
+        reallocate(capacity);
     }
 
     ~Vector()
@@ -159,20 +164,39 @@ public:
     T& emplaceBack(Args&&... args)
     {
         if (m_capacity <= m_size) {
-            reAllocate(m_capacity > 0 ? m_capacity * 2 : 2);
+            reallocateForGrowth();
         }
 
         new (&m_data[m_size]) T(std::forward<Args>(args)...);
         return m_data[m_size++];
     }
 
-    void insert(const T& element)
+    iterator insert(const iterator pos, const T& element)
     {
+        sizeType offset = pos - begin();
+        if (m_capacity <= m_size) {
+            // TODO: combine reallocate and copyBackwards
+            reallocateForGrowth();
+        }
+
+        iterator newPos = begin() + offset;
+        for (iterator it = this->end() - 1; it >= newPos; --it) {
+            *(it + 1) = *it;
+        }
+
+        *newPos = element;
+        ++m_size;
+        return newPos;
     }
 
-    void insert(T&& element)
+    /*iterator insert(const iterator pos, T&& element)
     {
+        std::cout << "Test" << std::endl;
     }
+
+    iterator insert(const iterator pos, sizeType count, const T& element)
+    {
+    }*/
 
     void popBack()
     {
@@ -181,9 +205,33 @@ public:
         }
     }
 
+    /*void resize(sizeType count)
+    {
+    }*/
+
+    void resize(sizeType count, const T& element)
+    {
+        if (count < m_size) {
+            // Shrink
+            while (m_size > count) {
+                popBack();
+            }
+        } else if (count > m_size) {
+            // Grow
+            if (count > m_capacity) {
+                reallocate(count);
+            }
+
+            for (sizeType i = 0; i < count - m_size; ++i) {
+                new (&m_data[m_size + i]) T(element);
+            }
+            m_size = count;
+        }
+    }
+
     void clear()
     {
-        for (size_t i = 0; i < m_size; ++i) {
+        for (sizeType i = 0; i < m_size; ++i) {
             m_data[i].~T();
         }
 
@@ -192,25 +240,25 @@ public:
 
     //-------------------------------------------
     // Element access
-    T& operator[](const size_t index)
+    T& operator[](const sizeType index)
     {
         assert(index < m_size);
         return m_data[index];
     }
 
-    const T& operator[](const size_t index) const
+    const T& operator[](const sizeType index) const
     {
         assert(index < m_size);
         return m_data[index];
     }
 
-    T& at(const size_t index)
+    T& at(const sizeType index)
     {
         assert(index < m_size);
         return m_data[index];
     }
 
-    const T& at(const size_t index) const
+    const T& at(const sizeType index) const
     {
         assert(index < m_size);
         return m_data[index];
@@ -242,40 +290,40 @@ public:
 
     //-------------------------------------------
     // Capacity
-    void reserve(const size_t capacity)
+    void reserve(const sizeType capacity)
     {
         if (capacity > m_capacity) {
-            reAllocate(capacity);
+            reallocate(capacity);
         }
     }
 
     void shrinkToFit()
     {
         if (m_capacity > m_size) {
-            reAllocate(m_size);
+            reallocate(m_size);
         }
     }
 
-    const size_t size() const { return m_size; }
+    const sizeType size() const { return m_size; }
 
-    const size_t capacity() const { return m_capacity; }
+    const sizeType capacity() const { return m_capacity; }
 
     const bool empty() const { return m_size == 0; }
 
     //-------------------------------------------
     // Iterators
-    Iterator begin()
+    iterator begin()
     {
-        return Iterator(m_data);
+        return iterator(m_data);
     }
 
-    Iterator end()
+    iterator end()
     {
-        return Iterator(m_data + m_size);
+        return iterator(m_data + m_size);
     }
 
 private:
-    void reAllocate(size_t capacity)
+    void reallocate(sizeType capacity)
     {
         std::cout << "ReAllocate with new capacity " << capacity << std::endl;
         T* newData = (T*)operator new(capacity * sizeof(T));
@@ -290,9 +338,14 @@ private:
         m_capacity = capacity;
     }
 
+    void reallocateForGrowth()
+    {
+        reallocate(m_capacity > 0 ? m_capacity * 2 : 2);
+    }
+
 private:
     T* m_data = nullptr;
 
-    size_t m_size = 0;
-    size_t m_capacity = 0;
+    sizeType m_size = 0;
+    sizeType m_capacity = 0;
 };
