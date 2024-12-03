@@ -1,42 +1,30 @@
+#include "array.h"
 #include "vector.h"
 #include <iostream>
 
 int main()
 {
-    Vector<int> vector;
 
-    vector.emplaceBack(1);
-    vector.emplaceBack(2);
-    vector.emplaceBack(3);
-    vector.emplaceBack(4);
+    Array<int, 5> array;
 
-    for (auto& value : vector) {
-        std::cout << value << std::endl;
+    for (int i = 0; i < array.size(); i++) {
+        array.at(i) = i;
+        std::cout << array[i] << std::endl;
     }
 
-    std::cout << std::endl;
-
-    vector.insert(vector.begin() + 3, 11);
-
-    std::cout << std::endl;
-
-    for (Vector<int>::iterator it = vector.begin(); it != vector.end(); ++it) {
+    for (Array<int, 5>::iterator it = array.begin(); it < array.end(); ++it) {
         std::cout << *it << std::endl;
     }
 
-    std::cout << std::endl;
-
-    vector.resize(1, 1);
-    for (auto& value : vector) {
+    for (int value : array) {
         std::cout << value << std::endl;
     }
 
     std::cout << std::endl;
 
-    vector.resize(10, 1);
-    for (auto& value : vector) {
-        std::cout << value << std::endl;
-    }
+    std::cout << (array.end() - 3)[1] << std::endl;
 
-    std::cout << "Finshed" << std::endl;
+    std::cout << (array.end() < array.begin()) << std::endl;
+    std::cout << (array.end() > array.begin()) << std::endl;
+    std::cout << (array.end() != array.begin()) << std::endl;
 }
