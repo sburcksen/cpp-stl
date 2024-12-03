@@ -16,6 +16,16 @@ public:
     }
 
 public:
+    valueType& operator*() const
+    {
+        return *m_pointer;
+    }
+
+    pointerType operator->() const
+    {
+        return m_pointer;
+    }
+
     VectorIterator& operator++()
     {
         ++m_pointer;
@@ -73,19 +83,9 @@ public:
         return m_pointer - other.m_pointer;
     }
 
-    valueType& operator*() const
-    {
-        return *m_pointer;
-    }
-
     valueType& operator[](const int offset) const
     {
         return *(*this + offset);
-    }
-
-    pointerType operator->() const
-    {
-        return m_pointer;
     }
 
     bool operator==(const VectorIterator& other) const
@@ -142,7 +142,6 @@ public:
 
     ~Vector()
     {
-        std::cout << "~Vector()" << std::endl;
         clear();
         operator delete(m_data, m_capacity * sizeof(T));
     }
@@ -325,7 +324,6 @@ public:
 private:
     void reallocate(sizeType capacity)
     {
-        std::cout << "ReAllocate with new capacity " << capacity << std::endl;
         T* newData = (T*)operator new(capacity * sizeof(T));
 
         for (int i = 0; i < m_size; ++i) {
