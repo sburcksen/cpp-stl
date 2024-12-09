@@ -1,4 +1,5 @@
 #include "utility.h"
+#include <algorithm>
 
 template <typename Array>
 class ArrayIterator {
@@ -201,3 +202,39 @@ public:
 public:
     T m_data[S];
 };
+
+template <typename T, sizeType S>
+bool operator==(const Array& left, const Array& right)
+{
+    return equal(left.begin(), left.end(), right.begin());
+}
+
+template <sizeType I, typename T, sizeType S>
+sizeType& get(Array<T, S>& array)
+{
+    return array.at(I);
+}
+
+template <sizeType I, typename T, sizeType S>
+sizeType&& get(Array<T, S>& array)
+{
+    return std::move(get<I>(array));
+}
+
+template <sizeType I, typename T, sizeType S>
+const sizeType& get(Array<T, S>& array)
+{
+    return array.at(I);
+}
+
+template <sizeType I, typename T, sizeType S>
+const sizeType&& get(Array<T, S>& array)
+{
+    return std::move(get<I>(array));
+}
+
+template <typename T, sizeType S>
+void swap(Array<T, S>& left, Array<T, S>& right)
+{
+    left.swap(right);
+}
