@@ -1,6 +1,7 @@
-#include "array.h"
-#include "vector.h"
+#include "stl/include/array.h"
+// #include "stl/include/vector.h"
 #include <iostream>
+#include <string>
 
 int main()
 {
@@ -27,4 +28,26 @@ int main()
     std::cout << (array.end() < array.begin()) << std::endl;
     std::cout << (array.end() > array.begin()) << std::endl;
     std::cout << (array.end() != array.begin()) << std::endl;
+
+    std::cout << "Array::fill test" << std::endl;
+
+    Array<int, 5> array2;
+    array2.fill(123);
+
+    for (int value : array2) {
+        std::cout << value << std::endl;
+    }
+
+    std::cout << "Array::swap test" << std::endl;
+    Array<std::string, 3> arraySwap1 { "a", "b", "c" }, arraySwap2 { "d", "e", "f" };
+    Array<std::string, 4> arraySwap3 { "g", "h", "i", "j" };
+    Array<std::string, 2> arraySwap4 { "g", "h" };
+
+    arraySwap1.swap(arraySwap2);
+    for (auto value : arraySwap1) {
+        std::cout << value << std::endl;
+    }
+    for (auto value : arraySwap2) {
+        std::cout << value << std::endl;
+    }
 }

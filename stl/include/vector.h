@@ -1,3 +1,5 @@
+#include "utility.h"
+
 #include <cassert>
 #include <iostream>
 #include <new>
@@ -127,7 +129,6 @@ class Vector {
 public:
     using valueType = T;
     using iterator = VectorIterator<Vector<T>>;
-    using sizeType = unsigned int;
 
 public:
     Vector()

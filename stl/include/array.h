@@ -1,4 +1,4 @@
-#include <cstddef>
+#include "utility.h"
 
 template <typename Array>
 class ArrayIterator {
@@ -113,42 +113,48 @@ private:
     valueType* m_pointer;
 };
 
-template <typename T, std::size_t S>
+template <typename T, sizeType S>
 class Array {
 public:
     using valueType = T;
+    using sizeType = sizeType;
+    using differenceType = differenceType;
+    using reference = valueType&;
+    using constReference = const valueType&;
+    using pointer = valueType*;
+    using constPointer = const valueType*;
     using iterator = ArrayIterator<Array<T, S>>;
 
 public:
     //-------------------------------------------
     // Element access
-    T& at(const std::size_t index)
+    reference at(sizeType index)
     {
         return m_data[index];
     }
 
-    const T& at(const std::size_t index) const
+    constReference at(sizeType index) const
     {
         return m_data[index];
     }
 
-    T& operator[](const std::size_t index)
+    reference operator[](sizeType index)
     {
         return this->at(index);
     }
 
-    const T& operator[](const std::size_t index) const
+    constReference operator[](sizeType index) const
     {
         return this->at(index);
     }
 
-    T& front() { return m_data[0]; }
+    reference front() { return m_data[0]; }
 
-    const T& front() const { return m_data[0]; }
+    constReference front() const { return m_data[0]; }
 
-    T& back() { return m_data[S - 1]; }
+    reference back() { return m_data[S - 1]; }
 
-    const T& back() const { return m_data[S - 1]; }
+    constReference back() const { return m_data[S - 1]; }
 
     T* data() { return m_data; }
 
@@ -170,18 +176,28 @@ public:
     // Capacity
     constexpr bool empty() const { return S == 0; }
 
-    constexpr std::size_t size() const { return S; }
+    constexpr sizeType size() const { return S; }
+
+    constexpr sizeType maxSize() const { return S; }
 
     //-------------------------------------------
     // Operations
-    void fill(const T& value)
+    void fill(const T& element)
     {
+        fillWithElement(begin(), S, element);
     }
 
     void swap(Array& other)
     {
+        iterator it1 = begin();
+        iterator it2 = other.begin();
+        for (; it1 != end(); ++it1, ++it2) {
+            valueType tmp = *it1;
+            *it1 = *it2;
+            *it2 = tmp;
+        }
     }
 
-private:
+public:
     T m_data[S];
 };
