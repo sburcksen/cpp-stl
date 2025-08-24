@@ -204,7 +204,7 @@ public:
 };
 
 template <typename T, sizeType S>
-bool operator==(const Array& left, const Array& right)
+bool operator==(const Array<T, S>& left, const Array<T, S>& right)
 {
     return equal(left.begin(), left.end(), right.begin());
 }
